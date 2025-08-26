@@ -1,0 +1,68 @@
+name: Deploy Synapse Workspace to Production
+
+# 触发器：当有代码推送到源Synapse的发布分支（通常是'workspace_publish'）时触发
+on:
+  push:
+    branches:
+      - workspace_publish # 监听源Synapse的发布分支
+    paths:
+      - '**/*.json'       # 只关注JSON文件的变更，避免不必要的运行
+
+# 也可以手动触发工作流
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy-to-prod:
+    runs-on: ubuntu-latest
+    environment: Production # 定义一个环境，可用于手动审批和 secrets 管理（可选但推荐）
+
+    steps:
+      # 1. 检出代码（获取发布分支生成的ARM模板）
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. 使用 Azure Login 动作进行认证（使用之前创建的Service Principal）
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # 3. 部署 ARM 模板
+      - name: Deploy ARM Template to Synapse Production
+        uses: azure/arm-deploy@v1
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resourceGroupName: ${{ secrets.TARGET_SYNAPSE_RESOURCE_GROUP }}
+          template: ./workspace_publish/ARMTemplateForWorkspace.json
+          parameters: ./workspace_publish/ARMTemplateParametersForWorkspace.json
+          deploymentMode: Incremental
+          failOnEmptyChanges: true
+
+      # 4. (关键步骤) 覆盖生产环境链接服务的连接字符串
+      # 此步骤假设你的ARMTemplateParametersForWorkspace.json文件中的连接字符串参数已指向Key Vault引用。
+      # 例如："connectionString": {"value": "@Microsoft.KeyVault(SecretUri=https://myprodvault.vault.azure.net/secrets/mysecret/)"}
+      # 如果你的参数文件还是指向开发环境，你需要一个额外的步骤来动态替换它们。
+      # 下面的示例展示了如何用从Key Vault获取的真实值来更新一个SQL连接字符串
+
+      - name: Update SQL Pool Connection String in Production
+        run: |
+          # 从Azure Key Vault获取生产环境的连接字符串
+          prod_conn_str=$(az keyvault secret show --name "synapse-sql-connectionstring" --vault-name "${{ secrets.TARGET_KEY_VAULT_NAME }}" --query "value" -o tsv)
+
+          # 使用Azure CLI命令更新目标Synapse工作区中的链接服务
+          az synapse linked-service update \
+            --workspace-name "${{ secrets.TARGET_SYNAPSE_WORKSPACE_NAME }}" \
+            --name "YourSqlLinkedServiceName" \ # 请替换为你的链接服务实际名称
+            --resource-group "${{ secrets.TARGET_SYNAPSE_RESOURCE_GROUP }}" \
+            --connection-string "$prod_conn_str"
+        # 注意：你可能需要为每个链接服务重复此步骤，或编写更复杂的脚本。
+
+      # 5. 可选的后期步骤：触发管道、执行脚本等
+      # - name: Trigger a Pipeline in Prod
+      #   run: |
+      #     az synapse pipeline create-run --workspace-name "${{ secrets.TARGET_SYNAPSE_WORKSPACE_NAME }}" --name "YourPipelineName"
