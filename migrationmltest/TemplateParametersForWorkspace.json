@@ -17,6 +17,12 @@
 		"testgen2_accountKey": {
 			"value": ""
 		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"value": "https://notebooktest.vault.azure.cn/"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_connectionString_secretName": {
+			"value": "sql-connection-string"
+		},
 		"binbinserver_properties_typeProperties_server": {
 			"value": "binbinserver.database.chinacloudapi.cn"
 		},
