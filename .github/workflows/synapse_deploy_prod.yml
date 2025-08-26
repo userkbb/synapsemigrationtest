@@ -1,12 +1,15 @@
 name: Deploy Synapse Workspace to Production
 
 # 触发器：当有代码推送到源Synapse的发布分支（通常是'workspace_publish'）时触发
+#on:
+#  push:
+ #   branches:
+ #     - workspace_publish # 监听源Synapse的发布分支
+  #  paths:
+  #    - '**/*.json'       # 只关注JSON文件的变更，避免不必要的运行
 on:
-  push:
-    branches:
-      - workspace_publish # 监听源Synapse的发布分支
-    paths:
-      - '**/*.json'       # 只关注JSON文件的变更，避免不必要的运行
+  workflow_dispatch: 
+ 
 
 # 也可以手动触发工作流
 permissions:
