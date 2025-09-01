@@ -31,11 +31,13 @@ jobs:
         uses: azure/login@v2
         
         with:
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          environment: 'AzureChinaCloud'
+        creds: '{
+        "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+        "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+        "tenantId": "${{ secrets.AZURE_TENANT_ID }}",
+        "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+        }'
+        environment: 'AzureChinaCloud'
 
       # 3. 部署 ARM 模板
       - name: Deploy ARM Template to Synapse Production
