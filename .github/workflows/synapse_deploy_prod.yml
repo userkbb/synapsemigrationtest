@@ -47,8 +47,8 @@ jobs:
           scope: resourcegroup
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: ${{ secrets.TARGET_SYNAPSE_RESOURCE_GROUP }}
-          template: ./TemplateForWorkspace.json  # 修正路径
-          parameters: ./TemplateParametersForWorkspace.json  # 修正路径
+          template: ./migrationmltest/TemplateForWorkspace.json  # 修正路径
+          parameters: ./migrationmltest/TemplateParametersForWorkspace.json  # 修正路径
           deploymentMode: Incremental
        
 
