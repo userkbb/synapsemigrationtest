@@ -25,6 +25,8 @@ jobs:
       # 1. 检出代码（获取发布分支生成的ARM模板）
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          ref: workspace_publish  # 确保检出的是发布分支
 
       # 2. 使用 Azure Login 动作进行认证（使用之前创建的Service Principal）
       - name: Login to Azure
@@ -45,10 +47,10 @@ jobs:
           scope: resourcegroup
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: ${{ secrets.TARGET_SYNAPSE_RESOURCE_GROUP }}
-          template: ./workspace_publish/ARMTemplateForWorkspace.json
-          parameters: ./workspace_publish/ARMTemplateParametersForWorkspace.json
+          template: ./ARMTemplateForWorkspace.json  # 修正路径
+          parameters: ./ARMTemplateParametersForWorkspace.json  # 修正路径
           deploymentMode: Incremental
-          failOnEmptyChanges: true
+       
 
       # 4. (关键步骤) 覆盖生产环境链接服务的连接字符串
       # 此步骤假设你的ARMTemplateParametersForWorkspace.json文件中的连接字符串参数已指向Key Vault引用。
