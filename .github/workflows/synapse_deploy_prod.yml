@@ -39,23 +39,21 @@ jobs:
           environment: 'AzureChinaCloud'
 
       # 3. 部署 ARM 模板
-       - name: Deploy ARM Template to Synapse Production
-         uses: azure/arm-deploy@v1
-         with:
+      - name: Deploy ARM Template to Synapse Production
+        uses: azure/arm-deploy@v1
+        with:
           scope: resourcegroup
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
           template: ./TemplateForWorkspace.json  # 确保路径正确
           parameters: workspaceName=${{ env.TARGET_WORKSPACE_NAME }} resourceGroup=${{ env.RESOURCE_GROUP }} location='chinanorth3' ./TemplateParametersForWorkspace.json
           deploymentMode: Incremental
-       
 
       # 4. (关键步骤) 覆盖生产环境链接服务的连接字符串
       # 此步骤假设你的ARMTemplateParametersForWorkspace.json文件中的连接字符串参数已指向Key Vault引用。
       # 例如："connectionString": {"value": "@Microsoft.KeyVault(SecretUri=https://myprodvault.vault.azure.net/secrets/mysecret/)"}
       # 如果你的参数文件还是指向开发环境，你需要一个额外的步骤来动态替换它们。
       # 下面的示例展示了如何用从Key Vault获取的真实值来更新一个SQL连接字符串
-
       - name: Update SQL Pool Connection String in Production
         run: |
           # 从Azure Key Vault获取生产环境的连接字符串
@@ -63,13 +61,13 @@ jobs:
 
           # 使用Azure CLI命令更新目标Synapse工作区中的链接服务
           az synapse linked-service update \
-            --workspace-name "${{ secrets.TARGET_SYNAPSE_WORKSPACE_NAME }}" \
-            --name "YourSqlLinkedServiceName" \ # 请替换为你的链接服务实际名称
-            --resource-group "${{ secrets.TARGET_SYNAPSE_RESOURCE_GROUP }}" \
+            --workspace-name "${{ env.TARGET_WORKSPACE_NAME }}" \
+            --name "YourSqlLinkedServiceName" \
+            --resource-group "${{ env.RESOURCE_GROUP }}" \
             --connection-string "$prod_conn_str"
         # 注意：你可能需要为每个链接服务重复此步骤，或编写更复杂的脚本。
 
       # 5. 可选的后期步骤：触发管道、执行脚本等
       # - name: Trigger a Pipeline in Prod
       #   run: |
-      #     az synapse pipeline create-run --workspace-name "${{ secrets.TARGET_SYNAPSE_WORKSPACE_NAME }}" --name "YourPipelineName"
+      #     az synapse pipeline create-run --workspace-name "${{ env.TARGET_WORKSPACE_NAME }}" --name "YourPipelineName"
