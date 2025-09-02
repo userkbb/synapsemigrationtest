@@ -43,7 +43,7 @@ jobs:
           template: ./migrationmltest/TemplateForWorkspace.json
           parameters: ./migrationmltest/TemplateParametersForWorkspace.json
           overrideParameters: 'workspaceName "sinksynapsemigration"'
-          deploymentMode: Incrementall
+          deploymentMode: Incremental
 
       # 4. (关键步骤) 覆盖生产环境链接服务的连接字符串
       # 此步骤假设你的ARMTemplateParametersForWorkspace.json文件中的连接字符串参数已指向Key Vault引用。
