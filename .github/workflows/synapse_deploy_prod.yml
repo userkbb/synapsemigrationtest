@@ -24,7 +24,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          ref: workspace_publish  # 确保检出的是发布分支
+          ref: workspace_publish # 确保检出的是发布分支
 
       # 2. 使用 Azure Login 动作进行认证（使用之前创建的Service Principal）
       - name: Login to Azure
