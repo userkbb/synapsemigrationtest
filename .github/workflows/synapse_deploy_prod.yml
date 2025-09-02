@@ -10,10 +10,6 @@ name: Deploy Synapse Workspace to Production
 on:
   workflow_dispatch:
 
-env:
-  TARGET_WORKSPACE_NAME: 'sinksynapsemigration' # 使用环境变量定义目标工作区名称
-  RESOURCE_GROUP: "${{ secrets.TARGET_SYNAPSE_RESOURCE_GROUP }}" # 资源组名称
-
 jobs:
   deploy-to-prod:
     runs-on: ubuntu-latest
@@ -42,14 +38,11 @@ jobs:
       - name: Deploy ARM Template to Synapse Production
         uses: azure/arm-deploy@v1
         with:
-          scope: resourcegroup
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          resourceGroupName: ${{ env.RESOURCE_GROUP }}
+          subscriptionId: '78df7407-a3a1-4a7c-9494-bb3055562dfe'
+          resourceGroupName: 'synapsesink'
           template: ./migrationmltest/TemplateForWorkspace.json
-          parameters: ./migrationmltest/TemplateParametersForWorkspace.json # 依然使用源参数文件
-          overrideParameters: >-
-      -workspaceName ${{ env.TARGET_WORKSPACE_NAME }}
-     
+          parameters: ./migrationmltest/TemplateParametersForWorkspace.json
+          overrideParameters: 'workspaceName "sinksynapsemigration"'
           deploymentMode: Incrementall
 
       # 4. (关键步骤) 覆盖生产环境链接服务的连接字符串
