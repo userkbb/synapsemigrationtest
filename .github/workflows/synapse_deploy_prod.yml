@@ -52,7 +52,7 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
           template: ./TemplateForWorkspace.json  # 确保路径正确
-          parameters: workspaceName=${{ env.TARGET_WORKSPACE_NAME }} resourceGroup=${{ env.RESOURCE_GROUP }} location='chinaeast2' ./TemplateParametersForWorkspace.json
+          parameters: workspaceName=${{ env.TARGET_WORKSPACE_NAME }} resourceGroup=${{ env.RESOURCE_GROUP }} location='chinanorth3' ./TemplateParametersForWorkspace.json
           deploymentMode: Incremental
        
 
