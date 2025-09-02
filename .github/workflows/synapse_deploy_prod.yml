@@ -44,8 +44,8 @@ jobs:
       - name: Deploy ARM Template to Synapse Production
         uses: azure/arm-deploy@v1
         with:
-          scope: resourcegroup
-          TargetWorkspaceName: 'sinksynapsemigration'
+          
+          
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: ${{ secrets.TARGET_SYNAPSE_RESOURCE_GROUP }}
           template: ./migrationmltest/TemplateForWorkspace.json  # 修正路径
