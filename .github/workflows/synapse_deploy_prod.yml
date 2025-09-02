@@ -16,6 +16,10 @@ permissions:
   id-token: write
   contents: read
 
+  env:
+  TARGET_WORKSPACE_NAME: 'sinksynapsemigration'  # 使用环境变量定义目标工作区名称
+  RESOURCE_GROUP: '${{ secrets.TARGET_SYNAPSE_RESOURCE_GROUP }}'  # 资源组名称
+
 jobs:
   deploy-to-prod:
     runs-on: ubuntu-latest
@@ -41,15 +45,14 @@ jobs:
           environment: 'AzureChinaCloud'
 
       # 3. 部署 ARM 模板
-      - name: Deploy ARM Template to Synapse Production
+       - name: Deploy ARM Template to Synapse Production
         uses: azure/arm-deploy@v1
         with:
-          
+          scope: resourcegroup
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          resourceGroupName: ${{ secrets.TARGET_SYNAPSE_RESOURCE_GROUP }}
-          workspaceName:  ${{ secrets.TARGET_SYNAPSE_WORKSPACE_NAME }}
-          template: ./migrationmltest/TemplateForWorkspace.json  # 修正路径
-          parameters: ./migrationmltest/TemplateParametersForWorkspace.json  # 修正路径
+          resourceGroupName: ${{ env.RESOURCE_GROUP }}
+          template: ./TemplateForWorkspace.json  # 确保路径正确
+          parameters: workspaceName=${{ env.TARGET_WORKSPACE_NAME }} resourceGroup=${{ env.RESOURCE_GROUP }} location='chinaeast2' ./TemplateParametersForWorkspace.json
           deploymentMode: Incremental
        
 
