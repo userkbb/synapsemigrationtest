@@ -14,6 +14,9 @@ jobs:
   deploy-to-prod:
     runs-on: ubuntu-latest
     environment: Production # 定义一个环境，可用于手动审批和 secrets 管理（可选但推荐）
+    env:
+      TARGET_WORKSPACE_NAME: sinksynapsemigration
+      RESOURCE_GROUP: synapsesink
 
     steps:
       # 1. 检出代码（获取发布分支生成的ARM模板）
@@ -42,8 +45,8 @@ jobs:
           resourceGroupName: 'synapsesink'
           template: ./migrationmltest/TemplateForWorkspace.json
           parameters: ./migrationmltest/TemplateParametersForWorkspace.json
-          overrideParameters: 'workspaceName "sinksynapsemigration"'
           deploymentMode: Incremental
+          additionalArguments: '--parameters workspaceName=sinksynapsemigration'
 
       # 4. (关键步骤) 覆盖生产环境链接服务的连接字符串
       # 此步骤假设你的ARMTemplateParametersForWorkspace.json文件中的连接字符串参数已指向Key Vault引用。
