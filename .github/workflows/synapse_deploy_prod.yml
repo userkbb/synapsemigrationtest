@@ -10,13 +10,16 @@ name: Deploy Synapse Workspace to Production
 on:
   workflow_dispatch:
 
+env:
+  TARGET_WORKSPACE_NAME: 'sinksynapsemigration' # 使用环境变量定义目标工作区名称
+  RESOURCE_GROUP: "${{ secrets.TARGET_SYNAPSE_RESOURCE_GROUP }}" # 资源组名称
 
 jobs:
   deploy-to-prod:
     runs-on: ubuntu-latest
     environment: Production # 定义一个环境，可用于手动审批和 secrets 管理（可选但推荐）
 
-    steps:
+  steps:
       # 1. 检出代码（获取发布分支生成的ARM模板）
       - name: Checkout Repository
         uses: actions/checkout@v4
