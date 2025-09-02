@@ -45,9 +45,12 @@ jobs:
           scope: resourcegroup
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
-          template: ./migrationmltest/TemplateForWorkspace.json  # 确保路径正确
-          parameters: workspaceName=${{ env.TARGET_WORKSPACE_NAME }} ./migrationmltest/TemplateParametersForWorkspace.json
-          deploymentMode: Incremental
+          template: ./migrationmltest/TemplateForWorkspace.json
+          parameters: ./migrationmltest/TemplateParametersForWorkspace.json # 依然使用源参数文件
+          overrideParameters: >-
+      -workspaceName ${{ env.TARGET_WORKSPACE_NAME }}
+     
+          deploymentMode: Incrementall
 
       # 4. (关键步骤) 覆盖生产环境链接服务的连接字符串
       # 此步骤假设你的ARMTemplateParametersForWorkspace.json文件中的连接字符串参数已指向Key Vault引用。
