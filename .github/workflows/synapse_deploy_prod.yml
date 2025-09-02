@@ -45,8 +45,8 @@ jobs:
           scope: resourcegroup
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
-          template: ./TemplateForWorkspace.json  # 确保路径正确
-          parameters: workspaceName=${{ env.TARGET_WORKSPACE_NAME }} resourceGroup=${{ env.RESOURCE_GROUP }} location='chinanorth3' ./TemplateParametersForWorkspace.json
+          template: ./migrationmltest/TemplateForWorkspace.json  # 确保路径正确
+          parameters: workspaceName=${{ env.TARGET_WORKSPACE_NAME }} resourceGroup=${{ env.RESOURCE_GROUP }} location='chinanorth3' ./migrationmltest/TemplateParametersForWorkspace.json
           deploymentMode: Incremental
 
       # 4. (关键步骤) 覆盖生产环境链接服务的连接字符串
